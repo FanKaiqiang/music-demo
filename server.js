@@ -30,7 +30,7 @@ var server = http.createServer(function(request, response){
     var config = fs.readFileSync('./qiniu-key.json')
     config =JSON.parse(config)
     let {accessKey,secretKey}=config
-    var mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+    var mac = new qiniu.auth.digest.Mac(accessKey, secretKey); 
     var options = {
       scope: '163music',
     };
