@@ -68,8 +68,12 @@
       this.bindEvents()
       this.view.render(this.model.data)
       window.eventHub.on('upload', (data) => {//一旦获得新的data
-        
-        this.view.render(data)//就将这个新的data渲染到页面中
+        this.model.data = data
+        this.view.render(this.model.data)//就将这个新的data渲染到页面中
+      })
+      window.eventHub.on('select',(data)=>{//订阅歌单选择事件
+        this.model.data=data//将得到的data置于model
+        this.view.render(this.model.data)//渲染页面
       })
     },
     bindEvents() {
