@@ -10,7 +10,7 @@
       $el.html(this.template)
       let { songs } = data//将获取到的song推入data
       console.log(songs)
-      let liList = songs.map((song) => $('<li></li>').text(song.name))//遍历songs，创建li标签
+      let liList = songs.map((song) => $('<li></li>').text(song.name).attr('data-id',song.id))//遍历songs，创建li标签
       console.log(liList)
       $el.find('ul').empty()//清空原来的ul
 
@@ -57,8 +57,10 @@
       })
     },
     bindEvents() {
-      $(this.view.el).on('click','li',(e)=>{
-        this.view.activeItem(e.currentTarget)
+      $(this.view.el).on('click','li',(e)=>{//歌单绑定监听点击li事件
+        this.view.activeItem(e.currentTarget)//获取点击元素
+        let songId = e.currentTarget.getAttribute('data-id')//读取点击元素的data-id属性
+        window.eventHub.emit('select',{id:songId})//发布select事件
       })
     },
     bindEventHub() {
