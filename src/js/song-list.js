@@ -21,6 +21,11 @@
     },
     clearActive() {
       $(this.el).find('.active').removeClass('active')
+    },
+    activeItem(li){//获取到点击的li标签
+      let $li = $(li)
+      $li.addClass('active')//添加active
+      .siblings('.active').removeClass('active')//兄弟元素移除active
     }
   }
   let model = {
@@ -30,8 +35,8 @@
     find() {//查询
       var query = new AV.Query('Song');//查询数据库中已有的数据
       return query.find().then((songs) => {//将查询到的结果遍历
-        this.data.songs = songs.map((song)=>{//将结果推入songs中
-          return {id:song.id,...song.attributes}
+        this.data.songs = songs.map((song) => {//将结果推入songs中
+          return { id: song.id, ...song.attributes }
         })
         return songs
       })
@@ -42,17 +47,28 @@
       this.view = view
       this.model = model
       this.view.render(this.model.data)
-      window.eventHub.on('upload', () => {
-        this.view.clearActive()
+      this.bindEvents()
+      this.bindEventHub()
+      this.getAllSongs()
+    },
+    getAllSongs() {
+      return this.model.find().then(() => {//每次初始化时都重新从数据库中读取数据并渲染页面
+        this.view.render(this.model.data)
+      })
+    },
+    bindEvents() {
+      $(this.view.el).on('click','li',(e)=>{
+        this.view.activeItem(e.currentTarget)
+      })
+    },
+    bindEventHub() {
+      window.eventHub.on('upload', () => {//绑定点击歌单事件
+        this.view.clearActive()//点击触发active
       })
       window.eventHub.on('create', (songData) => {//监听到歌曲创建
         this.model.data.songs.push(songData)//将数据推入model
         this.view.render(this.model.data)
       })
-      this.model.find().then(() => {//每次初始化时都重新从数据库中读取数据并渲染页面
-        this.view.render(this.model.data)
-      })
-
     }
   }
   controller.init(view, model)
