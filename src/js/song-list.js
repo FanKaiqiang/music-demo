@@ -63,7 +63,7 @@
             data = songs[i]
             break
           }
-        }//把用户点击的li对应的歌曲信息深拷贝，作为data发布
+        }//把用户点击的li对应的歌曲信息借助JSON深拷贝，作为data发布
         window.eventHub.emit('select', JSON.parse(JSON.stringify(data)))//发布select事件
       })
     },
@@ -74,6 +74,9 @@
       window.eventHub.on('create', (songData) => {//监听到歌曲创建
         this.model.data.songs.push(songData)//将数据推入model
         this.view.render(this.model.data)
+      })
+      window.eventHub.on('new',()=>{//订阅new事件
+        this.view.clearActive()//其他标签取消高亮
       })
     }
   }

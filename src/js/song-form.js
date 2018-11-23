@@ -5,7 +5,6 @@
       this.$el = $(this.el)
     },
     template: `
-    <h1>新建歌曲</h1>
     <form class="form">
       <div class="row">
         <label>歌名</label>
@@ -31,6 +30,11 @@
         html = html.replace(`__${string}__`, data[string] || '')
       })
       $(this.el).html(html)//渲染页面
+      if(data.id){//如果当前data.id存在（即li标签有对应的歌曲）
+        $(this.el).prepend('<h1>编辑歌曲</h1>')
+      }else{
+        $(this.el).prepend('<h1>新建歌曲</h1>')
+      }
     },
     reset() {
       this.render({})
@@ -73,6 +77,10 @@
       })
       window.eventHub.on('select',(data)=>{//订阅歌单选择事件
         this.model.data=data//将得到的data置于model
+        this.view.render(this.model.data)//渲染页面 
+      })
+      window.eventHub.on('new',()=>{//订阅new事件
+        this.model.data = {}//清空data
         this.view.render(this.model.data)//渲染页面
       })
     },
