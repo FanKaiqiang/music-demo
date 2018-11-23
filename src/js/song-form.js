@@ -68,6 +68,7 @@
       this.bindEvents()
       this.view.render(this.model.data)
       window.eventHub.on('upload', (data) => {//一旦获得新的data
+        
         this.view.render(data)//就将这个新的data渲染到页面中
       })
     },
