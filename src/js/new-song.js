@@ -19,7 +19,6 @@
         this.active()
       })
       window.eventHub.on('select', (data) => {//监听歌单选择事件
-        console.log(data.id)
         this.deactive()//将新建歌曲栏取消高亮
       })
       $(this.view.el).on('click', () => {

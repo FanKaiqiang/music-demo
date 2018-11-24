@@ -75,6 +75,15 @@
       window.eventHub.on('new',()=>{//订阅new事件
         this.view.clearActive()//其他标签取消高亮
       })
+      window.eventHub.on('update',(song)=>{//监听update事件
+        let songs =this.model.data.songs//获得边栏中所有歌曲信息
+        for(let i=0;i<songs.length;i++){//遍历
+          if(songs[i].id === song.id){//查询到此次更新的歌曲
+            Object.assign(songs[i],song)//将边栏中的歌曲信息进行更新
+          }
+        }
+        this.view.render(this.model.data)//渲染
+      })
     }
   }
   controller.init(view, model)
