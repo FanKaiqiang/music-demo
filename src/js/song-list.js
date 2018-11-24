@@ -68,9 +68,6 @@
       })
     },
     bindEventHub() {
-      window.eventHub.on('upload', () => {//绑定点击歌单事件
-        this.view.clearActive()//点击触发active
-      })
       window.eventHub.on('create', (songData) => {//监听到歌曲创建
         this.model.data.songs.push(songData)//将数据推入model
         this.view.render(this.model.data)

@@ -30,9 +30,10 @@
         html = html.replace(`__${string}__`, data[string] || '')
       })
       $(this.el).html(html)//渲染页面
-      if(data.id){//如果当前data.id存在（即li标签有对应的歌曲）
+      console.log(data.id)
+      if (data.id || data.id === {}) {//如果当前data.id存在（即li标签有对应的歌曲）
         $(this.el).prepend('<h1>编辑歌曲</h1>')
-      }else{
+      } else {
         $(this.el).prepend('<h1>新建歌曲</h1>')
       }
     },
@@ -69,18 +70,19 @@
       this.view = view
       this.view.init()
       this.model = model
-      this.bindEvents()
       this.view.render(this.model.data)
-      window.eventHub.on('upload', (data) => {//一旦获得新的data
-        this.model.data = data
-        this.view.render(this.model.data)//就将这个新的data渲染到页面中
-      })
-      window.eventHub.on('select',(data)=>{//订阅歌单选择事件
-        this.model.data=data//将得到的data置于model
+      this.bindEvents()
+      window.eventHub.on('select', (data) => {//监听歌单选择事件
+        this.model.data = data//将得到的data置于model
         this.view.render(this.model.data)//渲染页面 
       })
-      window.eventHub.on('new',()=>{//订阅new事件
-        this.model.data = {}//清空data
+      window.eventHub.on('new', (data) => {//监听new事件（即上传文件或点击新建歌曲）
+        if (this.model.data.id && !data) {//如果当前表单中的歌是已经存在数据库里的歌（即编辑歌曲状态）
+          this.model.data = {}//置空表单
+        } else {//如果是新建歌曲状态或上传歌曲的状态
+          Object.assign(this.model.data, data)//填入数据
+          this.model.data.id = ''
+        }
         this.view.render(this.model.data)//渲染页面
       })
     },
