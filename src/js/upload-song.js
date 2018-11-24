@@ -31,19 +31,14 @@
           },
           'BeforeUpload': function (up, file) {
             // 每个文件上传前,处理相关的事情
+            window.eventHub.emit('beforeUpload')//发布事件，显示loading界面
           },
           'UploadProgress': function (up, file) {
             // 每个文件上传时,处理相关的事情
           },
           'FileUploaded': function (up, file, info) {
             // 每个文件上传成功后,处理相关的事情
-            // 其中 info.response 是文件上传成功后，服务端返回的json，形式如
-            // {
-            //    "hash": "Fh8xVqod2MQ1mocfI4S4KpRL6D98",
-            //    "key": "gogopher.jpg"
-            //  }
-            // 参考http://developer.qiniu.com/docs/v6/api/overview/up/response/simple-response.html
-
+            window.eventHub.emit('afterUpload')//发布事件，隐藏loading界面
             var domain = up.getOption('domain');
             var response = JSON.parse(info.response);
             var sourceLink = 'http://' + domain + '/' + encodeURIComponent(response.key); //获取上传成功后的文件的Url
