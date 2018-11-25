@@ -1,5 +1,25 @@
 {
-  let view = {}
+  let view = {//添加audio标签与播放暂停按钮
+    el:'#app',
+    template:`
+      <audio src={{url}}></audio>
+      <div>
+        <button class="play">播放音乐</button>
+        <button class="pause">暂停音乐</button>
+      </div>
+    `,
+    render(data){//接受到歌曲信息进行渲染
+      $(this.el).html(this.template.replace('{{url}}',data.url))//将url置入audio标签
+    },
+    play(){//播放事件
+      let audio = $(this.el).find('audio')[0]
+      audio.play()
+    },
+    pause(){//暂停事件
+      let audio = $(this.el).find('audio')[0]
+      audio.pause()
+    }
+  }
   let model = {
     data:{
       id:'',
@@ -25,7 +45,16 @@
       let id = this.getSongId()//获取查询参数中的歌曲id
       this.model.setId(id)//将id存入model中
       this.model.get().then(()=>{//根据获取到的id查询歌曲信息，并将得到的信息存入model
-        console.log(this.model.data)
+        this.view.render(this.model.data)//接受歌曲信息，进行渲染
+      })
+      this.bindEvents()
+    },
+    bindEvents(){//绑定事件
+      $(this.view.el).on('click','.play',()=>{//点击按钮播放音乐
+        this.view.play()
+      })
+      $(this.view.el).on('click','.pause',()=>{//点击按钮暂停音乐
+        this.view.pause()
       })
     },
     getSongId() {
