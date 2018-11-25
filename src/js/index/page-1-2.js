@@ -1,28 +1,32 @@
 {//最新音乐模块
   let view = {
     el: 'section.songs',
+    template: `
+    <li>
+    <h3>{{song.name}}</h3>
+      <p>
+        <svg class="icon icon-sq">
+          <use xlink:href="#icon-sq"></use>
+        </svg>
+        {{song.singer}}
+      </p>
+    <a class="playButton" href="./song.html?id={{song.id}}">
+      <svg class="icon icon-play">
+        <use xlink:href="#icon-play"></use>
+      </svg>
+    </a>
+    </li>
+    `,
     init() {
       this.$el = $(this.el)
     },
     render(data) {//将获取到的歌单数据渲染到页面中
       let songs = data//读取数据
       songs.map((song) => {//遍历数据
-        let $li = $(`
-        <li>
-          <h3>${song.name}</h3>
-            <p>
-              <svg class="icon icon-sq">
-                <use xlink:href="#icon-sq"></use>
-              </svg>
-              ${song.singer}
-            </p>
-          <a class="playButton" href="#">
-            <svg class="icon icon-play">
-              <use xlink:href="#icon-play"></use>
-            </svg>
-          </a>
-        </li>
-        `)//形成标签
+        let $li = $(this.template//将占位符进行替换
+          .replace('{{song.name}}', song.name)
+          .replace('{{song.singer}}', song.singer)
+          .replace('{{song.id}}', song.id))//形成标签
         this.$el.find('ol.list').append($li)//填充标签
       })
     }
@@ -48,7 +52,6 @@
       this.model = model
       this.model.find().then(() => {//获取数据后将数据进行渲染
         this.view.render(this.model.data.songs)
-        console.log(this.model.data.songs)
       })
     }
   }
