@@ -22,13 +22,17 @@
         <label>封面</label>
         <input name="cover" type="text" value="__cover__">
       </div>
+      <div class="row">
+        <label>歌词</label>
+        <textarea cols=100 rows=10 style="resize:none" name="lyrics">__lyrics__</textarea>
+      </div>
       <div class="row actions">
         <button type="submit">保存</button>
       </div>
     </form>
     `,//容器内容
     render(data = {}) {//把容器内容放入页面的方法
-      let placeholders = ['name', 'url', 'singer', 'id','cover']//声明占位符数组
+      let placeholders = ['name', 'url', 'singer', 'id','cover','lyrics']//声明占位符数组
       let html = this.template
       placeholders.map((string) => {//遍历数组，将获得的data替换占位符
         html = html.replace(`__${string}__`, data[string] || '')
@@ -46,7 +50,7 @@
   }
   let model = {
     data: {
-      name: '', singer: '', url: '', id: '',cover:''
+      name: '', singer: '', url: '', id: '',cover:'',lyrics:''
     },
     update(data) {//更新数据
       // 第一个参数是 className，第二个参数是 objectId
@@ -56,6 +60,7 @@
       song.set('singer', data.singer);
       song.set('url', data.url);
       song.set('cover', data.cover);
+      song.set('lyrics',data.lyrics);
       // 保存到云端
       return song.save().then((response) => {//将model中的data修改为更新后的data
         Object.assign(this.data, data)
@@ -72,6 +77,7 @@
       song.set('singer', data.singer);
       song.set('url', data.url);
       song.set('cover', data.cover);
+      song.set('lyrics',data.lyrics);
       return song.save().then((newSong) => {
         let { id, attributes } = newSong
         this.data = {//把所有id与attributes的值赋予data
@@ -104,10 +110,10 @@
       })
     },
     create() {//创建
-      let needs = 'name singer url'.split(' ')//生成['name','singer','url']数组
+      let needs = 'name singer url cover lyrics'.split(' ')//生成['name','singer','url']数组
       let data = {}
       needs.map((string) => {//遍历needs，将页面中input填入的值放入data
-        data[string] = this.view.$el.find(`input[name=${string}]`).val()
+        data[string] = this.view.$el.find(`[name=${string}]`).val()
       })
       this.model.create(data).then(() => {//一旦创建新的data，就渲染到页面里
         this.view.reset()
@@ -115,10 +121,10 @@
       })
     },
     update() {//更新
-      let needs = 'name singer url cover'.split(' ')//生成['name','singer','url']数组
+      let needs = 'name singer url cover lyrics'.split(' ')//生成['name','singer','url']数组
       let data = {}
       needs.map((string) => {//遍历needs，将页面中input填入的值放入data
-        data[string] = this.view.$el.find(`input[name=${string}]`).val()
+        data[string] = this.view.$el.find(`[name=${string}]`).val()
       })
       this.model.update(data).then(() => {//发布update事件
         window.eventHub.emit('update', JSON.parse(JSON.stringify(this.model.data)))
