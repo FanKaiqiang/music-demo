@@ -1,12 +1,15 @@
 {
   let view = {//添加audio标签与播放暂停按钮
     el: '#app',
-    render(data, status) {//对页面进行渲染
-      let song = data
+    render(data) {//对页面进行渲染
+      let { song, status } = data//从data中提取信息
       $(this.el).css('background-image', `url(${song.cover})`)//替换背景图片
       $(this.el).find('img.cover').attr('src', song.cover)//替换光碟封面
       if ($(this.el).find('audio').attr('src') !== song.url) {//如果歌曲已经存在，就不重新渲染
-        $(this.el).find('audio').attr('src', song.url)
+        let audio = $(this.el).find('audio').attr('src', song.url).get(0)//将audio标签的src属性进行替换并把audio标签取出
+        audio.onended = () => {//监听取出的audio标签的ended事件
+          window.eventHub.emit('songEnd')//发布“songEnd”事件
+        }
       }
       if (status === 'playing') {//根据歌曲播放状态判断光碟是否转动
         $(this.el).find('.disc-container').addClass('playing')
@@ -49,19 +52,24 @@
       let id = this.getSongId()//获取查询参数中的歌曲id
       this.model.setId(id)//将id存入model中
       this.model.get().then(() => {//根据获取到的id查询歌曲信息，并将得到的信息存入model
-        this.view.render(this.model.data.song, this.model.data.status)//接受歌曲信息，进行渲染
+        this.view.render(this.model.data)//接受歌曲信息，进行渲染
       })
       this.bindEvents()
     },
     bindEvents() {//绑定事件
       $(this.view.el).on('click', '.icon-play', () => {//点击播放按钮
         this.model.data.status = 'playing'//状态切换
-        this.view.render(this.model.data.song, this.model.data.status)//渲染页面
+        this.view.render(this.model.data)//渲染页面
         this.view.play()//播放歌曲
       })
       $(this.view.el).on('click', '.icon-pause', () => {//点击暂停按钮
         this.model.data.status = 'paused'//状态切换
-        this.view.render(this.model.data.song, this.model.data.status)//渲染页面
+        this.view.render(this.model.data)//渲染页面
+        this.view.pause()//暂停歌曲
+      })
+      window.eventHub.on('songEnd', () => {//监听songEnd事件（歌曲播放结束）
+        this.model.data.status = 'paused'//状态切换为暂停（光盘停止旋转）
+        this.view.render(this.model.data)//渲染页面
         this.view.pause()//暂停歌曲
       })
     },
