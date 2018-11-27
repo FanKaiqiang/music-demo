@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <link rel="stylesheet" href="./css/default.css">
+  <link rel="stylesheet" href="./css/loading.css">
+</head>
+
+<body>
+  <div class="playListForm-wrapper">
+    <h1>创建歌单</h1>
+    <form class="playListForm">
+      <div class="row">
+        <label>歌单名
+          <input type="text" name="name">
+        </label>
+      </div>
+      <div class="row">
+        <label>简介
+          <textarea name="summary"></textarea>
+        </label>
+      </div>
+      <div class="row">
+        <button type="submit">创建</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="../vendors/av-min.js"></script>
+  <script src="./js/initializers/av.js"></script>
+  <script src="../vendors/jquery.min.js"></script>
+  <script src="./js/admin/event-hub.js"></script>
+  <script>
+    {
+      let view = {
+        el: '.playListForm-wrapper'
+      }
+      let model = {
+        create(data) {//在数据库中创建歌单
+          var PlayList = AV.Object.extend('PlayList');//建立歌单表
+          var playList = new PlayList();//新建一个歌单项目
+          playList.set('name', data.name);//填入数据
+          playList.set('summary', data.summary);
+          playList.save().then((newplayList) => {//存入数据库
+            console.log(newplayList)
+          }, (error) => {
+            console.error(error);
+          });
+        }
+      }
+      let controller = {
+        init(view, model) {
+          this.view = view
+          this.model = model
+          this.bindEvents()
+        },
+        bindEvents() {
+          $(this.view.el).on('submit', 'form', (e) => {//监听表单提交事件
+            e.preventDefault()
+            let form = $(this.view.el).find('form').get(0)
+            let keys = ['name', 'summary']
+            let data = {}//用于存放累加结果的空对象
+            keys.reduce((prev, item) => {//prev为累加结果，item为遍历数组的值
+              prev[item] = form[item].value//将form[item]的值存入prev
+              return prev
+            }, data)//将新的prev值返回，进行下次累加
+
+            this.model.create(data)
+          })
+        }
+      }
+      controller.init(view, model)
+    }
+  </script>
+  <script>
+    // var Song = new AV.Object('Song');// 广州
+    // Song.set('name', '广州');
+    // var PlayList = new AV.Object('PlayList');// 广东
+    // PlayList.set('name', '广东');
+    // Song.set('dependent', PlayList);// 为广州设置 dependent 属性为广东
+    // Song.save().then(function (Song) {
+    //   console.log(Song.id);
+    // });
+
+    // var Song = AV.Object.extend('Song');
+    // var song = new Song();
+    // song.set('name', '222');
+
+
+    // song.set('dependent', playList);// Song属于PlayList
+    // song.save().then((song) =>{
+    //   console.log(song.name);
+    // });
+
+
+  </script>
+
+</body>
+
+</html>
