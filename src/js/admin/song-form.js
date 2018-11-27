@@ -79,11 +79,13 @@
       song.set('cover', data.cover);
       song.set('lyrics',data.lyrics);
       return song.save().then((newSong) => {
-        let { id, attributes } = newSong
-        this.data = {//把所有id与attributes的值赋予data
-          id,
-          ...attributes
-        }
+        let { id, attributes } = newSong//把所有id与attributes的值赋予data
+        this.data = Object.assign({id:id},attributes)
+        // let { id, attributes } = newSong
+        // this.data = {//把所有id与attributes的值赋予data
+        //   id,
+        //   ...attributes
+        // }
       }, (error) => {
         console.error(error);
       });

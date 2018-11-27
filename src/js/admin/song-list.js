@@ -34,7 +34,8 @@
       var query = new AV.Query('Song');//查询数据库中已有的数据
       return query.find().then((songs) => {//将查询到的结果遍历
         this.data.songs = songs.map((song) => {//将结果推入songs中
-          return { id: song.id, ...song.attributes }
+          return Object.assign({ id: song.id }, song.attributes)
+          //return { id: song.id, ...song.attributes }
         })
         return songs
       })
